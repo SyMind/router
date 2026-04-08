@@ -132,7 +132,7 @@ export async function createCompositeComponent<TComp>(
         })
       : flightStream
 
-  return createCompositeHandle(monitoredFlightStream, {
+  return createCompositeHandle(new ReplayableStream(monitoredFlightStream), {
     slotUsagesStream: slotUsagesEmitter?.stream,
   }) as CompositeComponentResult<TComp>
 }
@@ -142,17 +142,11 @@ export async function createCompositeComponent<TComp>(
  * No proxy needed - the client will decode and create its own proxy.
  */
 function createCompositeHandle(
-  flightStream: ReadableStream<Uint8Array>,
+  flightStream: ServerComponentStream,
   options?: {
     slotUsagesStream?: ReadableStream<RscSlotUsageEvent>
   },
 ): AnyCompositeComponent {
-  // Simple single-use stream wrapper. For server function calls, the stream
-  // is consumed exactly once by the serialization adapter for transport.
-  const streamWrapper: ServerComponentStream = {
-    createReplayStream: () => flightStream,
-  }
-
   // Create a stub function with the stream attached for serialization.
   // This will never be rendered directly - it goes through serialization
   // which extracts the stream and sends it to the client.
@@ -163,7 +157,7 @@ function createCompositeHandle(
     )
   }
 
-  ;(stub as any)[SERVER_COMPONENT_STREAM] = streamWrapper
+  ;(stub as any)[SERVER_COMPONENT_STREAM] = flightStream
   // Note: RENDERABLE_RSC is not set (or implicitly false), indicating this is a composite component
 
   if (options?.slotUsagesStream) {
