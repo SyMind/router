@@ -1,3 +1,5 @@
+"use server-entry";
+
 import { createServerRpc } from '@tanstack/react-start/server-rpc';
 import { createServerFn, createMiddleware } from '@tanstack/react-start';
 const authMiddleware = createMiddleware({

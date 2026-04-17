@@ -33,7 +33,16 @@ function* findPendingLazyPayloads(
     el.type === 'link' &&
     el.props?.rel === 'stylesheet'
   ) {
-    const cssHref = el.props['data-rsc-css-href'] as string | undefined
+    // TODO: Rspack RSC currently injects CSS links with `precedence="default"`,
+    // and we use that as a heuristic to identify RSC-managed CSS. This is fragile
+    // because `precedence` controls stylesheet ordering, not ownership. Consider
+    // adding an explicit Rspack marker or a configurable RSC CSS precedence instead.
+    let cssHref: string | undefined;
+    if (el.props.precedence == "default") {
+      cssHref = el.props.href
+    } else {
+      cssHref = el.props["data-rsc-css-href"] as string | undefined
+    }
     if (cssHref && cssCollector) {
       cssCollector(cssHref)
     }

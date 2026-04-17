@@ -141,7 +141,8 @@
       "@tanstack/eslint-plugin-router": "workspace:*",
       "@tanstack/router-utils": "workspace:*",
       "@tanstack/start-static-server-functions": "workspace:*",
-      "@tanstack/nitro-v2-vite-plugin": "workspace:*"
+      "@tanstack/nitro-v2-vite-plugin": "workspace:*",
+      "@rspack/core": "npm:@rspack-canary/core@2.0.2-canary-4b55509d-20260429041620"
     }
   }
 }

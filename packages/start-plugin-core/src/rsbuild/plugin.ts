@@ -455,7 +455,7 @@ export function tanStackStartRsbuild(
                 clientEntryName: 'index',
                 runtimeEntryName: 'index',
                 injectSsrModulesToEntries: ['index'],
-                onServerComponentChanges: () => {
+                onServerComponentChanges: async () => {
                   // Send rsc:update to connected clients for HMR
                   devServerRef?.sockWrite('custom', {
                     event: 'rsc:update',

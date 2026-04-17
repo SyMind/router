@@ -1,3 +1,5 @@
+"use server-entry";
+
 import { createServerRpc } from '@tanstack/react-start/server-rpc';
 import { createIsomorphicFn, createServerFn } from '@tanstack/react-start';
 const getEnv = createIsomorphicFn().server(() => 'server').client(() => 'client');
