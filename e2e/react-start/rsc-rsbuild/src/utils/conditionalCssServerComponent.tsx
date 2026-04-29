@@ -11,10 +11,13 @@ export const getConditionalCssServerComponent = createServerFn({
     const branch = data.branch === 'violet' ? 'violet' : 'orange'
 
     return renderServerComponent(
-      branch === 'violet' ? (
-        <ConditionalVioletPanel />
-      ) : (
-        <ConditionalOrangePanel />
-      ),
+      <>
+        {import.meta.rspackRsc.loadCss()}
+        {branch === 'violet' ? (
+          <ConditionalVioletPanel />
+        ) : (
+          <ConditionalOrangePanel />
+        )}
+      </>,
     )
   })

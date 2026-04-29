@@ -10,6 +10,9 @@ export const getNoLoaderCssServerComponent = createServerFn({
     await new Promise((resolve) => setTimeout(resolve, data.delayMs ?? 150))
 
     return renderServerComponent(
-      <CssModulesContent data={{ title: data.title }} />,
+      <>
+        {import.meta.rspackRsc.loadCss()}
+        <CssModulesContent data={{ title: data.title }} />
+      </>,
     )
   })

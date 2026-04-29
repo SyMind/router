@@ -9,30 +9,33 @@ export const getClientInRscServerComponent = createServerFn({ method: 'GET' })
     const serverTimestamp = Date.now()
 
     return renderServerComponent(
-      <div style={serverBox} data-testid="rsc-client-in-rsc-server">
-        <div style={serverHeader}>
-          <span style={serverBadge} data-testid="rsc-client-in-rsc-badge">
-            SERVER COMPONENT
-          </span>
-          <span style={timestamp} data-testid="rsc-client-in-rsc-timestamp">
-            Fetched: {new Date(serverTimestamp).toISOString()}
-          </span>
+      <>
+        {import.meta.rspackRsc.loadCss()}
+        <div style={serverBox} data-testid="rsc-client-in-rsc-server">
+          <div style={serverHeader}>
+            <span style={serverBadge} data-testid="rsc-client-in-rsc-badge">
+              SERVER COMPONENT
+            </span>
+            <span style={timestamp} data-testid="rsc-client-in-rsc-timestamp">
+              Fetched: {new Date(serverTimestamp).toISOString()}
+            </span>
+          </div>
+
+          <h2
+            style={{ margin: '0 0 8px 0', color: '#0c4a6e' }}
+            data-testid="rsc-client-in-rsc-title"
+          >
+            {data.title}
+          </h2>
+
+          <p style={{ margin: '0 0 8px 0', color: '#0369a1', fontSize: '14px' }}>
+            This server component directly renders a client component with
+            useState. The client component should hydrate and become interactive.
+          </p>
+
+          {/* Client component rendered directly inside server component */}
+          <ClientCounter label="Interactive Counter" />
         </div>
-
-        <h2
-          style={{ margin: '0 0 8px 0', color: '#0c4a6e' }}
-          data-testid="rsc-client-in-rsc-title"
-        >
-          {data.title}
-        </h2>
-
-        <p style={{ margin: '0 0 8px 0', color: '#0369a1', fontSize: '14px' }}>
-          This server component directly renders a client component with
-          useState. The client component should hydrate and become interactive.
-        </p>
-
-        {/* Client component rendered directly inside server component */}
-        <ClientCounter label="Interactive Counter" />
-      </div>,
+      </>,
     )
   })

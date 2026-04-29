@@ -5,5 +5,10 @@ import { CssModulesContent } from './CssModulesContent'
 export const getCssModulesServerComponent = createServerFn({ method: 'GET' })
   .inputValidator((data: { title?: string }) => data)
   .handler(async ({ data }) => {
-    return renderServerComponent(<CssModulesContent data={data} />)
+    return renderServerComponent(
+      <>
+        {import.meta.rspackRsc.loadCss()}
+        <CssModulesContent data={data} />
+      </>
+    )
   })
