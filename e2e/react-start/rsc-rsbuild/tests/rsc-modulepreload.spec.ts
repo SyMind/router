@@ -151,7 +151,7 @@ test.describe('Modulepreload Tests (Rsbuild)', () => {
     expect(html).toContain('rel="stylesheet"')
 
     const routeStylesheets = html!.match(
-      /<link rel="stylesheet" href="[^"]*\/static\/css(?:\/async)?\/[^"]*" type="text\/css"[^>]*data-rsc-css-href[^>]*>/g,
+      /<link rel="stylesheet" href="[^"]*\/static\/css(?:\/async)?\/[^"]*"[^>]*>/g,
     )
     expect(routeStylesheets).toBeTruthy()
     expect(routeStylesheets!.length).toBeGreaterThan(0)
@@ -165,7 +165,7 @@ test.describe('Modulepreload Tests (Rsbuild)', () => {
     expect(html).toBeDefined()
 
     const routeStylesheets = html!.match(
-      /<link rel="stylesheet" href="[^"]*\/static\/css(?:\/async)?\/[^"]*" type="text\/css"[^>]*data-rsc-css-href[^>]*>/g,
+      /<link rel="stylesheet" href="[^"]*\/static\/css(?:\/async)?\/[^"]*"[^>]*>/g,
     )
     expect(routeStylesheets).toBeTruthy()
     expect(routeStylesheets!.length).toBeGreaterThan(0)

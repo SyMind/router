@@ -2,13 +2,13 @@ import { ReactElement, ReactLazy, ReactSuspense } from './reactSymbols'
 
 /**
  * Optional callback for collecting CSS hrefs during tree traversal.
- * Only called server-side when processing <link rel="stylesheet" data-rsc-css-href>
+ * Only called when processing explicitly marked RSC CSS stylesheet links.
  */
 export type CssHrefCollector = (href: string) => void
 
 /**
  * Yields pending lazy element payloads from a tree, stopping at Suspense boundaries.
- * Also collects CSS hrefs from <link rel="stylesheet" data-rsc-css-href> elements.
+ * Also collects CSS hrefs from explicitly marked RSC CSS stylesheet links.
  */
 function* findPendingLazyPayloads(
   obj: unknown,
@@ -26,22 +26,19 @@ function* findPendingLazyPayloads(
     return
   }
 
-  // Collect CSS hrefs from <link rel="stylesheet" data-rsc-css-href>
-  // The active RSC bundler adapter injects these for CSS module imports
+  // Collect CSS hrefs from explicit Start-managed CSS markers. Do not collect
+  // ordinary React 19 stylesheet resources here: preiniting those before render
+  // marks them inserted and bypasses React's suspensey stylesheet commit wait.
   if (
     el.$$typeof === ReactElement &&
     el.type === 'link' &&
     el.props?.rel === 'stylesheet'
   ) {
-    // TODO: Rspack RSC currently injects CSS links with `precedence="default"`,
-    // and we use that as a heuristic to identify RSC-managed CSS. This is fragile
-    // because `precedence` controls stylesheet ordering, not ownership. Consider
-    // adding an explicit Rspack marker or a configurable RSC CSS precedence instead.
-    let cssHref: string | undefined;
-    if (el.props.precedence == "default") {
+    let cssHref: string | undefined
+    if ('data-rsc-css' in el.props) {
       cssHref = el.props.href
     } else {
-      cssHref = el.props["data-rsc-css-href"] as string | undefined
+      cssHref = el.props['data-rsc-css-href']
     }
     if (cssHref && cssCollector) {
       cssCollector(cssHref)
@@ -80,8 +77,7 @@ function* findPendingLazyPayloads(
  * This ensures client component chunks are fully loaded before rendering,
  * preventing Suspense boundaries from flashing during SWR navigation.
  *
- * Also collects CSS hrefs from <link rel="stylesheet" data-rsc-css-href>
- * elements for preloading in <head>.
+ * Also collects CSS hrefs from explicitly marked RSC CSS stylesheet links.
  *
  * @param tree - The tree to process
  * @param cssCollector - Optional callback to collect CSS hrefs (server-only)

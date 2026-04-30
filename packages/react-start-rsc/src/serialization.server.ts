@@ -39,6 +39,7 @@ const jsCollectorStorage = new AsyncLocalStorage<Set<string>>()
 setOnClientReference(
   ({
     deps,
+    runtime,
   }: {
     deps: { js: Array<string>; css: Array<string> }
     runtime?: 'rsbuild'
@@ -59,10 +60,10 @@ setOnClientReference(
       }
     }
 
-    // Rsbuild injects the collected assets when the decoded RSC is actually
-    // rendered via ReactDOM.preinit/preloadModule, which avoids eagerly
-    // polluting the request asset list for decoded-but-unrendered trees.
-    if (!ctx) return
+    // Rsbuild injects collected assets when the decoded RSC is actually
+    // rendered via ReactDOM.preinit/preloadModule. Keeping them off the
+    // request manifest avoids emitting assets for decoded-but-unrendered trees.
+    if (!ctx || runtime === 'rsbuild') return
 
     if (!ctx.requestAssets) ctx.requestAssets = []
     const seenHrefs = new Set<string>()

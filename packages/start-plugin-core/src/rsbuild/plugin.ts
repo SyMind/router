@@ -452,9 +452,12 @@ export function tanStackStartRsbuild(
             // Add ServerPlugin with HMR callback
             config.plugins.push(
               new rscPlugins.ServerPlugin({
-                clientEntryName: 'index',
-                runtimeEntryName: 'index',
-                injectSsrModulesToEntries: ['index'],
+                cssLink: {
+                  precedence: false,
+                  attributes: {
+                    'data-rsc-css': '',
+                  },
+                },
                 onServerComponentChanges: async () => {
                   // Send rsc:update to connected clients for HMR
                   devServerRef?.sockWrite('custom', {

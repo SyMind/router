@@ -15,7 +15,6 @@ test.describe('RSC Query Without Loader CSS Tests (Rsbuild)', () => {
     expect(html).toContain('data-testid="rsc-query-no-loader-resolved"')
     expect(html).toContain('data-testid="rsc-css-modules-content"')
     expect(html).toContain('rel="stylesheet"')
-    expect(html).toContain('data-rsc-css-href')
   })
 
   test('resolved suspense query RSC renders with CSS module styles applied', async ({
