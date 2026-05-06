@@ -1,5 +1,3 @@
-"use server-entry";
-
 import { createServerRpc } from '@tanstack/react-start/server-rpc';
 import * as TanStackStart from '@tanstack/react-start';
 import { z } from 'zod';

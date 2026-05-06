@@ -143,9 +143,7 @@ describe('createServerFn compiles correctly', async () => {
 
     // Server provider: has second argument (this is the implementation file)
     expect(compiledResultServerProvider!.code).toMatchInlineSnapshot(`
-      ""use server-entry";
-
-      import { createServerRpc } from '@tanstack/react-start/server-rpc';
+      "import { createServerRpc } from '@tanstack/react-start/server-rpc';
       import { createServerFn } from '@tanstack/react-start';
       const myFunc = () => {
         return 'hello from the server';
@@ -211,9 +209,7 @@ describe('createServerFn compiles correctly', async () => {
     })
 
     expect(compiledResultServerProvider!.code).toMatchInlineSnapshot(`
-      ""use server-entry";
-
-      import { createServerRpc } from '@tanstack/react-start/server-rpc';
+      "import { createServerRpc } from '@tanstack/react-start/server-rpc';
       import { createServerFn } from '@tanstack/react-start';
       const exportedVar = 'exported';
       const exportedFn_createServerFn_handler = createServerRpc({
