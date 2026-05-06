@@ -6,9 +6,6 @@ export const getAltCssServerComponent = createServerFn({ method: 'GET' })
   .inputValidator((data: { heading?: string }) => data)
   .handler(async ({ data }) => {
     return renderServerComponent(
-      <>
-        {import.meta.rspackRsc.loadCss()}
-        <AltCssContent data={data} />
-      </>
+      <AltCssContent data={data} />
     )
   })

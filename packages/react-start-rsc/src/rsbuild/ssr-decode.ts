@@ -164,9 +164,7 @@ async function createFromReadableStreamWithPreloadCollection<T = unknown>(
     preloadStream,
     prefix,
     emit,
-  ).catch(() => {
-    // Preload collection is best-effort and should not affect Flight decode.
-  })
+  )
 
   const result = await createFromReadableStream<T>(decodeStream, options)
   await preloadPromise

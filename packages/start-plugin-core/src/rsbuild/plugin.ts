@@ -458,7 +458,7 @@ export function tanStackStartRsbuild(
                     'data-rsc-css': '',
                   },
                 },
-                onServerComponentChanges: async () => {
+                onServerComponentChanges: () => {
                   // Send rsc:update to connected clients for HMR
                   devServerRef?.sockWrite('custom', {
                     event: 'rsc:update',
