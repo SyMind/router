@@ -38,7 +38,6 @@
     "@rsbuild/core": "^2.0.1",
     "@rsbuild/plugin-react": "^2.0.0",
     "@tanstack/eslint-plugin-start": "workspace:^",
-    "@tanstack/react-start-rsc": "workspace:^",
     "@tanstack/router-e2e-utils": "workspace:^",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.8",
