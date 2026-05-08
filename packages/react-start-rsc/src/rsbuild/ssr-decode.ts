@@ -48,6 +48,9 @@ function emitClientReferencePreloads(
 ) {
   let js: Array<string> | undefined
 
+  // Rsbuild's RSC import metadata stores client reference chunks as alternating
+  // metadata/file entries. The file entries are the browser JS modules that
+  // need to be surfaced to the SSR layer as modulepreload hrefs.
   for (let i = FIRST_CHUNK_FILE_INDEX; i < chunks.length; i += CHUNK_PAIR_SIZE) {
     const chunkFile = chunks[i]
     if (typeof chunkFile === 'string') {
@@ -148,7 +151,7 @@ function setOnClientReference(callback: OnClientReference | undefined) {
   onClientReference = callback
 }
 
-async function createFromReadableStreamWithPreloadCollection<T = unknown>(
+async function createFromReadableStreamCollectingClientPreloads<T = unknown>(
   stream: ReadableStream<Uint8Array>,
   options?: object,
 ): Promise<T> {
@@ -159,6 +162,12 @@ async function createFromReadableStreamWithPreloadCollection<T = unknown>(
   }
 
   const prefix = getModuleLoadingPrefix()
+
+  // Decode the Flight stream normally while a second reader scans the same
+  // bytes for import rows. This lets SSR collect client component JS discovered
+  // during RSC decode and attach it to the renderable proxy, so pages like
+  // /rsc-client-preload can emit extra <link rel="modulepreload"> tags for
+  // nested client components before hydration starts.
   const [decodeStream, preloadStream] = stream.tee()
   const preloadPromise = collectClientReferencePreloads(
     preloadStream,
@@ -173,5 +182,5 @@ async function createFromReadableStreamWithPreloadCollection<T = unknown>(
 
 export {
   setOnClientReference,
-  createFromReadableStreamWithPreloadCollection as createFromReadableStream,
+  createFromReadableStreamCollectingClientPreloads as createFromReadableStream,
 }
