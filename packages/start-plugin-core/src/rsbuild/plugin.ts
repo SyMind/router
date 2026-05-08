@@ -12,6 +12,7 @@ import { normalizePath } from '../utils'
 import { createServerFnBasePath, normalizePublicBase } from '../planning'
 import { parseStartConfig } from './schema'
 import {
+  RSBUILD_CLIENT_ASSETS_DIR,
   RSBUILD_ENVIRONMENT_NAMES,
   RSBUILD_RSC_LAYERS,
   createRsbuildEnvironmentPlan,
@@ -276,7 +277,7 @@ export function tanStackStartRsbuild(
         ssrIsProvider,
         serializationAdapters: corePluginOpts.serializationAdapters,
         getDevClientEntryUrl: (publicBase: string) =>
-          joinURL(publicBase, 'static/js/index.js'),
+          joinURL(publicBase, RSBUILD_CLIENT_ASSETS_DIR, 'js/index.js'),
         rscEnabled,
       })
       updateServerFnResolver = virtualModuleState.updateServerFnResolver
@@ -455,7 +456,7 @@ export function tanStackStartRsbuild(
                 cssLink: {
                   precedence: false,
                   attributes: {
-                    'data-rsc-css': '',
+                    'data-rsc-css-href': '',
                   },
                 },
                 onServerComponentChanges: () => {
