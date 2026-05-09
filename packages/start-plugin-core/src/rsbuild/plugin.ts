@@ -455,7 +455,7 @@ export function tanStackStartRsbuild(
               new rscPlugins.ServerPlugin({
                 cssLink: {
                   precedence: false,
-                  attributes: {
+                  props: {
                     'data-rsc-css-href': '',
                   },
                 },
