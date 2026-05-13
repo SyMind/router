@@ -110,7 +110,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@rsbuild/core": "^2.0.1",
+    "@rsbuild/core": "^2.0.6",
     "@types/babel__code-frame": "^7.0.6",
     "@types/babel__core": "^7.20.5",
     "@types/picomatch": "^4.0.2",
