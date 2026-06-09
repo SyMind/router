@@ -1,5 +1,13 @@
 # @tanstack/react-router
 
+## 1.170.16
+
+### Patch Changes
+
+- [#7575](https://github.com/TanStack/router/pull/7575) [`4a93cff`](https://github.com/TanStack/router/commit/4a93cffffca34702e419bc47db827f964fd0cb65) - useMatches can skip useRef for structural sharing during SSR
+
+- [#7577](https://github.com/TanStack/router/pull/7577) [`689d88e`](https://github.com/TanStack/router/commit/689d88e04c48ec76a18453ab8b82d8d58f2668b6) - Reduce bundle size by sharing structuralSharing selector logic
+
 ## 1.170.15
 
 ### Patch Changes
