@@ -1,5 +1,14 @@
 # @tanstack/start-plugin-core
 
+## 1.171.40
+
+### Patch Changes
+
+- [#8164](https://github.com/TanStack/router/pull/8164) [`37877da`](https://github.com/TanStack/router/commit/37877da166fe4ce055c7b85e138b6681ebd7e8b4) - Improve Rsbuild import protection performance by scanning the compilation graph once and deferring diagnostic work until a violation is found.
+
+- Updated dependencies []:
+  - @tanstack/router-generator@1.167.33
+
 ## 1.171.39
 
 ### Patch Changes

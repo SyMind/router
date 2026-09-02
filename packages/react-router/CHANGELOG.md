@@ -1,5 +1,11 @@
 # @tanstack/react-router
 
+## 1.170.33
+
+### Patch Changes
+
+- [#8169](https://github.com/TanStack/router/pull/8169) [`0caf6b9`](https://github.com/TanStack/router/commit/0caf6b9a2b7e14b0b146c74cc27cb05c19d700a5) - Fix route-scoped `useMatch`, `useSearch`, and `useParams` APIs to forward the `shouldThrow` option and preserve optional return types when `shouldThrow: false`.
+
 ## 1.170.32
 
 ### Patch Changes
