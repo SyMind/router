@@ -15,7 +15,13 @@ import type {
   ScriptFormat,
 } from '@tanstack/router-core'
 import type { InlineCssTemplate } from './inlineCss'
-import type { NormalizedClientBuild, NormalizedClientChunk } from '../types'
+import type {
+  NormalizedClientAssets,
+  NormalizedClientBuild,
+  NormalizedClientChunk,
+  NormalizedClientChunkBuild,
+  NormalizedClientGroupBuild,
+} from '../types'
 
 type RouteTreeRoute = {
   filePath?: string
@@ -270,27 +276,33 @@ export function buildStartManifest(options: {
     Record<string, ReadonlyArray<AdditionalRouteManifestEntry>>
   >
 }): StartManifest {
-  const scannedChunks = scanClientChunks(options.clientBuild)
-  const assetResolvers = createManifestAssetResolvers(
-    options.basePath,
-    scannedChunks.chunksByFileName,
-  )
-
-  const routes = buildRouteManifestRoutes({
-    routeTreeRoutes: options.routeTreeRoutes,
-    routeChunksByFilePath: scannedChunks.routeChunksByFilePath,
-    chunksByFileName: scannedChunks.chunksByFileName,
-    entryChunk: scannedChunks.entryChunk,
-    assetResolvers,
-    additionalRouteAssets: options.additionalRouteAssets,
-  })
-
-  appendEntryChunkScripts({
-    route: routes[rootRouteId]!,
-    chunk: scannedChunks.entryChunk,
-    scriptFormat: options.scriptFormat ?? 'module',
-    getAssetPath: assetResolvers.getAssetPath,
-  })
+  let routes: Record<string, RouteTreeRoute>
+  if ('routeAssetsByFilePath' in options.clientBuild) {
+    routes = buildGroupManifestRoutes({
+      ...options,
+      clientBuild: options.clientBuild,
+    })
+  } else {
+    const scannedChunks = scanClientChunks(options.clientBuild)
+    const assetResolvers = createManifestAssetResolvers(
+      options.basePath,
+      scannedChunks.chunksByFileName,
+    )
+    routes = buildRouteManifestRoutes({
+      routeTreeRoutes: options.routeTreeRoutes,
+      routeChunksByFilePath: scannedChunks.routeChunksByFilePath,
+      chunksByFileName: scannedChunks.chunksByFileName,
+      entryChunk: scannedChunks.entryChunk,
+      assetResolvers,
+      additionalRouteAssets: options.additionalRouteAssets,
+    })
+    appendEntryChunkScripts({
+      route: routes[rootRouteId]!,
+      chunk: scannedChunks.entryChunk,
+      scriptFormat: options.scriptFormat ?? 'module',
+      getAssetPath: assetResolvers.getAssetPath,
+    })
+  }
 
   dedupeNestedRouteManifestEntries(rootRouteId, routes[rootRouteId]!, routes)
 
@@ -325,12 +337,77 @@ export function buildStartManifest(options: {
   return result
 }
 
+/** Rsbuild already collected complete resources in each route loading context. */
+function buildGroupManifestRoutes(options: {
+  clientBuild: NormalizedClientGroupBuild
+  routeTreeRoutes: RouteTreeRoutes
+  basePath: string
+  scriptFormat?: ScriptFormat
+  additionalRouteAssets?: Partial<
+    Record<string, ReadonlyArray<AdditionalRouteManifestEntry>>
+  >
+}) {
+  const routes: Record<string, RouteTreeRoute> = {}
+  const assetPath = (file: string) => joinURL(options.basePath, file)
+  const mergeAssets = (
+    route: RouteTreeRoute,
+    assets: NormalizedClientAssets,
+  ) => {
+    route.preloads = appendUniqueStrings(
+      route.preloads,
+      assets.preloads.map(assetPath),
+    )
+    appendRouteStylesheets(route, assets.css.map(assetPath))
+  }
+  for (const [routeId, route] of Object.entries(options.routeTreeRoutes)) {
+    if (!route.filePath && routeId !== rootRouteId) {
+      throw new Error(`expected filePath to be set for ${routeId}`)
+    }
+    const target = (routes[routeId] = { ...route })
+    const assets =
+      route.filePath &&
+      options.clientBuild.routeAssetsByFilePath.get(route.filePath)
+    if (assets) {
+      mergeAssets(target, assets)
+    }
+  }
+  const root = (routes[rootRouteId] ??= {})
+  mergeAssets(root, options.clientBuild.entryAssets)
+  const { entryChunkFileName, entryAssets } = options.clientBuild
+  const scriptFormat = options.scriptFormat ?? 'module'
+  const scriptFiles =
+    scriptFormat === 'iife'
+      ? [
+          ...entryAssets.preloads.filter((file) => file !== entryChunkFileName),
+          entryChunkFileName,
+        ]
+      : [entryChunkFileName]
+  for (const [routeId, entries] of Object.entries(
+    options.additionalRouteAssets ?? {},
+  )) {
+    if (!entries?.length) {
+      continue
+    }
+    if (!(routeId in options.routeTreeRoutes)) {
+      throw new Error(
+        `expected additionalAssets routeId to exist in routeTreeRoutes: ${routeId}`,
+      )
+    }
+    appendAdditionalRouteEntries(routes[routeId]!, entries)
+  }
+  appendRouteScripts(
+    root,
+    scriptFiles.map((file) => buildScript(assetPath(file), scriptFormat)),
+  )
+  return routes
+}
+
 export function serializeStartManifest(startManifest: StartManifest) {
   return serialize(startManifest)
 }
 
 export function scanClientChunks(
-  clientBuild: NormalizedClientBuild,
+  clientBuild: NormalizedClientChunkBuild,
 ): ScannedClientChunks {
   const entryChunk = clientBuild.chunksByFileName.get(
     clientBuild.entryChunkFileName,
